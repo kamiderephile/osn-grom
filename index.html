@@ -1,372 +1,575 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="Служебный информационный портал ОСН «Гром» ГУ МВД России по Нижегородской области">
-  <title>ОСН «Гром» · Информационный портал</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap');
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Служебный информационный портал ОСН «Гром» ГУ МВД России по Нижегородской области">
+    <title>ОСН «Гром» · Информационный портал</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
+    </style>
 </head>
 <body>
-  <div class="terminal-noise"></div>
-  <div class="scanlines"></div>
-  <div class="glitch-overlay" id="glitchOverlay"></div>
-  <div class="data-stream" id="dataStream"></div>
 
-  <div id="preloader" class="preloader">
-    <div class="preloader-hud">
-      <div class="mvd-emblem-container">
-        <img src="images/gerb-mvd.png" alt="Герб МВД РФ" class="mvd-emblem-img" id="mvdEmblemImg" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-        <div class="mvd-emblem-fallback" style="display:none;">
-          <div class="fallback-shield"></div>
+    <div class="crt-overlay"></div>
+    <div class="scanlines"></div>
+    <div class="vignette"></div>
+    <div class="noise-bg"></div>
+    <div class="custom-cursor" id="customCursor"></div>
+
+    <div class="boot-screen" id="bootScreen">
+        <div class="boot-container">
+            <div class="boot-emblem-wrapper">
+                <img src="images/gerb-mvd.png" alt="Герб МВД" class="boot-img">
+            </div>
+            <h1 class="boot-title glitch-text" data-text="МИНИСТЕРСТВО ВНУТРЕННИХ ДЕЛ">МИНИСТЕРСТВО ВНУТРЕННИХ ДЕЛ</h1>
+            <h2 class="boot-subtitle">РОССИЙСКОЙ ФЕДЕРАЦИИ</h2>
+            <div class="boot-line"></div>
+            <div class="boot-console" id="bootConsole"></div>
+            <div class="boot-loading">
+                <div class="boot-loading-bar">
+                    <div class="boot-loading-fill"></div>
+                </div>
+                <span class="loading-text">ЗАГРУЗКА СИСТЕМЫ...</span>
+            </div>
         </div>
-        <div class="glitch-scan"></div>
-        <div class="glitch-scan-horizontal"></div>
-      </div>
-      <span class="hud-text">ИНИЦИАЛИЗАЦИЯ ТЕРМИНАЛА</span>
-      <div class="hud-bar"><div class="hud-fill"></div></div>
-      <span class="hud-sub">ЗАГРУЗКА МОДУЛЕЙ БЕЗОПАСНОСТИ...</span>
-      <div class="terminal-log" id="terminalLog"></div>
     </div>
-  </div>
 
-  <div class="custom-cursor" id="customCursor"></div>
+    <div class="lock-screen" id="lockScreen">
+        <div class="lock-container">
+            <div class="lock-header">
+                <img src="images/gerb-mvd.png" alt="МВД" class="lock-emblem-img">
+                <h2 class="lock-title">ДОСТУП ОГРАНИЧЕН</h2>
+                <p class="lock-subtitle">ТЕРМИНАЛ ЗАБЛОКИРОВАН</p>
+            </div>
+            
+            <div class="pin-interface">
+                <div class="pin-display">
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                    <span class="pin-dot"></span>
+                </div>
+                <input type="password" id="lockInput" class="lock-input-hidden" maxlength="4" autocomplete="off" inputmode="numeric" readonly>
+                
+                <div class="numpad-grid">
+                    <button class="num-btn" data-val="1">1</button>
+                    <button class="num-btn" data-val="2">2</button>
+                    <button class="num-btn" data-val="3">3</button>
+                    <button class="num-btn" data-val="4">4</button>
+                    <button class="num-btn" data-val="5">5</button>
+                    <button class="num-btn" data-val="6">6</button>
+                    <button class="num-btn" data-val="7">7</button>
+                    <button class="num-btn" data-val="8">8</button>
+                    <button class="num-btn" data-val="9">9</button>
+                    <button class="num-btn clear-btn" data-val="C">CLR</button>
+                    <button class="num-btn" data-val="0">0</button>
+                    <button class="num-btn enter-btn" id="lockSubmitBtn">ENT</button>
+                </div>
+            </div>
 
-  <header class="navbar" id="navbar">
-    <div class="nav-container">
-      <div class="nav-logo">
-        <img src="images/gerb-mvd.png" alt="МВД" class="nav-emblem" onerror="this.style.display='none'">
-        <div class="logo-text">
-          <span class="logo-dept">ГУ МВД России по Нижегородской области</span>
-          <span class="logo-unit">ОСН «ГРОМ»</span>
+            <div class="lock-status">
+                <div class="lock-error" id="lockError"></div>
+                <div class="lock-attempts" id="lockAttempts">ПОПЫТОК: 3</div>
+                <div class="lock-timer" id="lockTimer" style="display:none;"></div>
+            </div>
         </div>
-      </div>
-      <nav class="nav-links" id="navLinks">
-        <a href="#hero" class="nav-item active">Терминал</a>
-        <a href="#about" class="nav-item">Нормативная база</a>
-        <a href="#info" class="nav-item">Учебное пособие</a>
-        <a href="#command" class="nav-item">Руководство</a>
-        <a href="#units" class="nav-item">Подразделения</a>
-        <a href="#resources" class="nav-item">Ресурсы</a>
-        <a href="#lk" class="nav-item lk-nav">Личный кабинет</a>
-      </nav>
-      <button class="mobile-toggle" id="mobileToggle" aria-label="Меню">
-        <span></span><span></span><span></span>
-      </button>
     </div>
-  </header>
 
-  <main>
-    <section id="hero" class="hero-section">
-      <div class="parallax-bg" id="parallaxBg"></div>
-      <div class="hero-overlay"></div>
-      <div class="hero-grid"></div>
-      <div class="hero-scan-effect"></div>
-      <div class="hero-content">
-        <div class="hero-badge">
-          <span class="badge-dot"></span>
-          ИНФОРМАЦИОННЫЙ ПОРТАЛ · ГРИФ «ДСП»
-          <span class="badge-dot"></span>
-        </div>
-        <h1 class="hero-title">ОТРЯД СПЕЦИАЛЬНОГО НАЗНАЧЕНИЯ <span class="text-red">«ГРОМ»</span></h1>
-        <p class="hero-subtitle">Главное управление Министерства внутренних дел Российской Федерации по Нижегородской области</p>
-        <div class="hero-terminal-info">
-          <div class="term-line"><span class="term-label">СТАТУС ПОРТАЛА:</span> <span class="term-value online">АКТИВЕН</span></div>
-          <div class="term-line"><span class="term-label">ОБНОВЛЕНО:</span> <span class="term-value">2026-05-23</span></div>
-          <div class="term-line"><span class="term-label">УРОВЕНЬ ДОСТУПА:</span> <span class="term-value restricted">ДЛЯ ЛИЧНОГО СОСТАВА</span></div>
-        </div>
-        <div class="hero-actions">
-          <button class="btn btn-outline" id="infoBtn">
-            <span class="btn-icon">◈</span> Учебное пособие
-          </button>
-          <button class="btn btn-outline" id="docsBtn">
-            <span class="btn-icon">◈</span> Нормативная база
-          </button>
-          <button class="btn btn-primary" id="lkBtn">
-            <span class="btn-icon">◈</span> Личный кабинет
-          </button>
-        </div>
-        <div class="hero-quick-links">
-          <a href="#about" class="quick-link">НОРМАТИВЫ</a>
-          <span class="quick-separator">|</span>
-          <a href="#info" class="quick-link">ПОСОБИЕ</a>
-          <span class="quick-separator">|</span>
-          <a href="#command" class="quick-link">КОМАНДОВАНИЕ</a>
-          <span class="quick-separator">|</span>
-          <a href="#units" class="quick-link">СТРУКТУРА</a>
-          <span class="quick-separator">|</span>
-          <a href="#lk" class="quick-link">ЛК</a>
-        </div>
-      </div>
-      <div class="cinematic-borders">
-        <div class="corner top-left"></div>
-        <div class="corner top-right"></div>
-        <div class="corner bottom-left"></div>
-        <div class="corner bottom-right"></div>
-      </div>
-    </section>
-
-    <section id="about" class="about-section section-dark">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2 class="section-title"><span class="hud-tag">[БАЗА]</span> НОРМАТИВНАЯ БАЗА</h2>
-          <div class="title-line"></div>
-        </div>
-        <div class="about-grid">
-          <div class="about-text reveal">
-            <p class="about-intro">Деятельность ОСН «Гром» строго регламентирована законодательством Российской Федерации. Ознакомьтесь с ключевыми нормативными документами.</p>
-            <div class="legal-links">
-              <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-o-policii.1019568/" target="_blank" rel="noopener" class="legal-link-item"><span>ФЗ «О полиции»</span></a>
-              <a href="https://forum.amazing-online.com/threads/ustav-organov-vnutrennix-del.1056410/" target="_blank" rel="noopener" class="legal-link-item"><span>Устав ОВД</span></a>
-              <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-o-gosudarstvennoj-sobstvennosti-oxranjaemyx-i-sluzhebnyx-territorijax.1006052/" target="_blank" rel="noopener" class="legal-link-item"><span>ФЗ «О государственной собственности, охраняемых и служебных территориях»</span></a>
-              <a href="https://forum.amazing-online.com/threads/ugolovnyj-kodeks-nizhegorodskoj-oblasti.925121/" target="_blank" rel="noopener" class="legal-link-item"><span>УК Нижегородской области</span></a>
-              <a href="https://forum.amazing-online.com/threads/obschij-kodeks-ob-administrativnyx-pravonarushenijax-nizhegorodskoj-oblasti.1019571/" target="_blank" rel="noopener" class="legal-link-item"><span>КоАП Нижегородской области</span></a>
-              <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-o-protivodejstvii-terrorizmu.947270/" target="_blank" rel="noopener" class="legal-link-item"><span>ФЗ «О противодействии терроризму»</span></a>
-              <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-ob-oruzhii.876611/" target="_blank" rel="noopener" class="legal-link-item"><span>ФЗ «Об оружии»</span></a>
-              <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-ob-operativno-rozysknoj-dejatelnosti.876596/" target="_blank" rel="noopener" class="legal-link-item"><span>ФЗ «Об ОРД»</span></a>
+    <div id="preloader" class="preloader">
+        <div class="preloader-hud">
+            <div class="mvd-emblem-container">
+                <img src="images/gerb-mvd.png" alt="Герб МВД" class="mvd-img">
+                <div class="glitch-scan"></div>
             </div>
-          </div>
-          <div class="about-cards">
-            <div class="advantage-card glass-card reveal">
-              <div class="card-icon"></div>
-              <h4>Законность</h4>
-              <p>Неукоснительное соблюдение законодательства РФ и ведомственных нормативных актов.</p>
+            <span class="hud-text">ИНИЦИАЛИЗАЦИЯ ТЕРМИНАЛА</span>
+            <div class="hud-bar">
+                <div class="hud-fill"></div>
             </div>
-            <div class="advantage-card glass-card reveal">
-              <div class="card-icon"></div>
-              <h4>Профессионализм</h4>
-              <p>Высочайший уровень тактико-специальной, огневой и физической подготовки.</p>
-            </div>
-            <div class="advantage-card glass-card reveal">
-              <div class="card-icon"></div>
-              <h4>Бдительность</h4>
-              <p>Постоянная готовность к выполнению задач в условиях повышенной опасности.</p>
-            </div>
-          </div>
+            <span class="hud-sub">ЗАГРУЗКА МОДУЛЕЙ БЕЗОПАСНОСТИ...</span>
+            <div class="terminal-log" id="terminalLog"></div>
         </div>
-      </div>
-    </section>
-
-    <section id="info" class="info-section">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2 class="section-title"><span class="hud-tag">[ПОСОБИЕ]</span> УЧЕБНОЕ ПОСОБИЕ</h2>
-          <div class="title-line"></div>
-        </div>
-        <div class="info-grid">
-          <div class="info-card glass-card reveal" data-modal="modal-pdp">
-            <h3>Оказание ПДП</h3>
-            <p>Правовая и доврачебная помощь гражданам в зоне проведения специальных операций.</p>
-            <button class="btn-detail">ПОДРОБНЕЕ</button>
-          </div>
-          <div class="info-card glass-card reveal" data-modal="modal-svu">
-            <h3>Разминирование СВУ</h3>
-            <p>Обнаружение, идентификация и обезвреживание самодельных взрывных устройств всех типов.</p>
-            <button class="btn-detail">ПОДРОБНЕЕ</button>
-          </div>
-          <div class="info-card glass-card reveal" data-modal="modal-coord">
-            <h3>Координация нарядов</h3>
-            <p>Централизованное управление наружными службами и оперативными нарядами.</p>
-            <button class="btn-detail">ПОДРОБНЕЕ</button>
-          </div>
-          <div class="info-card glass-card reveal" data-modal="modal-stroy">
-            <h3>Строевая подготовка</h3>
-            <p>Ежедневные занятия по строевой выучке, слаженность подразделений.</p>
-            <button class="btn-detail">ПОДРОБНЕЕ</button>
-          </div>
-          <div class="info-card glass-card reveal" data-modal="modal-ognev">
-            <h3>Огневая подготовка</h3>
-            <p>Стрельба из табельного оружия, тактические стрельбы.</p>
-            <button class="btn-detail">ПОДРОБНЕЕ</button>
-          </div>
-          <div class="info-card glass-card reveal" data-modal="modal-med">
-            <h3>Тактическая медицина</h3>
-            <p>Само- и взаимопомощь в боевых условиях, аптечки IFAK.</p>
-            <button class="btn-detail">ПОДРОБНЕЕ</button>
-          </div>
-        </div>
-        <div class="accordion reveal" style="margin-top:40px;">
-          <div class="accordion-item">
-            <button class="accordion-trigger">Внутренний регламент и субординация <span class="accordion-icon"></span></button>
-            <div class="accordion-content">
-              <p><strong>1. Иерархия:</strong> Командир → Зам. командира → Командиры отделений → Старшие групп → Бойцы.</p>
-              <p><strong>2. Субординация:</strong> Обращение по уставу, обязательные доклады, запрет обсуждения приказов.</p>
-              <p><strong>3. Распорядок:</strong> Ежедневное построение, проверка снаряжения, журнал учёта.</p>
-              <p><strong>4. Аттестация:</strong> Еженедельные нормативы ФП/ОП, ежемесячная тактическая проверка.</p>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <button class="accordion-trigger">Дисциплинарные требования и отбор <span class="accordion-icon"></span></button>
-            <div class="accordion-content">
-              <p><strong>1. Отбор:</strong> Психологическое тестирование → ФП (кросс 3 км, подтягивания) → Собеседование → Испытательный срок.</p>
-              <p><strong>2. Взыскания:</strong> Опоздание — наряд, нарушение субординации — предупреждение, повторно — отстранение.</p>
-              <p><strong>3. Поощрения:</strong> Благодарность в приказе, досрочное звание, ведомственные награды.</p>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <button class="accordion-trigger">Штатное расписание и структура <span class="accordion-icon"></span></button>
-            <div class="accordion-content">
-              <p><strong>1. Командование:</strong> Командир (1), Зам. командира (2), Нач. центра обучения (1).</p>
-              <p><strong>2. Штурмовое отделение:</strong> 2 ст. штурмовика, 3 штурмовика. АК-105, ПП-19, ВАЛ, щиты.</p>
-              <p><strong>3. Разведка:</strong> 1 ст. разведчик, 2 разведчика. ПНВ, спецсвязь, БПЛА.</p>
-              <p><strong>4. Снайперы:</strong> 1 ст. снайпер, 1 снайпер. СВД, ВСС, дальномеры.</p>
-              <p><strong>5. Обеспечение:</strong> 2 техника, 2 медика, 2 водителя. Бронеавтомобили, IFAK.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="command" class="command-section section-dark">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2 class="section-title"><span class="hud-tag">[КОМАНДОВАНИЕ]</span> РУКОВОДЯЩИЙ СОСТАВ</h2>
-          <div class="title-line"></div>
-        </div>
-        <div class="command-grid">
-          <div class="commander-card glass-card reveal">
-            <div class="commander-photo">
-              <img src="images/riba.png" alt="Заместитель командира" class="commander-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-              <div class="photo-placeholder" style="display:none;"></div>
-            </div>
-            <div class="commander-info">
-              <h3 class="commander-callsign">«Рыба»</h3>
-              <p class="commander-role">Заместитель командира</p>
-              <p class="commander-desc">Прапорщик полиции Тихомиров Никита Сергеевич</p>
-            </div>
-            <a href="https://vk.com/malkin21" target="_blank" rel="noopener" class="btn-contact">СВЯЗАТЬСЯ ВК</a>
-            <div class="card-glow"></div>
-          </div>
-          <div class="commander-card glass-card reveal">
-            <div class="commander-photo">
-              <img src="images/kurator.png" alt="Командир отряда" class="commander-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-              <div class="photo-placeholder" style="display:none;"></div>
-            </div>
-            <div class="commander-info">
-              <h3 class="commander-callsign">«Куратор»</h3>
-              <p class="commander-role">Командир отряда</p>
-              <p class="commander-desc">Капитан полиции Миризе Александр Эдуардович</p>
-            </div>
-            <a href="https://vk.com/flowederephile" target="_blank" rel="noopener" class="btn-contact">СВЯЗАТЬСЯ ВК</a>
-            <div class="card-glow"></div>
-          </div>
-          <div class="commander-card glass-card reveal">
-            <div class="commander-photo">
-              <img src="images/volk.png" alt="Начальник центра обучения" class="commander-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-              <div class="photo-placeholder" style="display:none;"></div>
-            </div>
-            <div class="commander-info">
-              <h3 class="commander-callsign">«Волк»</h3>
-              <p class="commander-role">Начальник центра обучения</p>
-              <p class="commander-desc">Майор полиции Волков Максим Александрович</p>
-            </div>
-            <a href="https://vk.com/id622196082" target="_blank" rel="noopener" class="btn-contact">СВЯЗАТЬСЯ ВК</a>
-            <div class="card-glow"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="units" class="units-section">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2 class="section-title"><span class="hud-tag">[СТРУКТУРА]</span> ОПЕРАТИВНЫЕ ПОДРАЗДЕЛЕНИЯ</h2>
-          <div class="title-line"></div>
-        </div>
-        <div class="units-hud">
-          <div class="unit-card reveal">
-            <div class="unit-hud-line"></div>
-            <h3>ШТУРМОВОЕ ОТДЕЛЕНИЕ</h3>
-            <p>Основная ударная сила отряда для силового захвата, штурма зданий и транспорта. Бойцы обучены CQB, специальным средствам и тактическому взаимодействию. Вооружение: АК-105, ПП-19-01 «Витязь», ВАЛ, гранаты, щиты. Экипировка: бронежилет 5 класса, шлем с ПНВ, средства связи.</p>
-          </div>
-          <div class="unit-card reveal">
-            <div class="unit-hud-line"></div>
-            <h3>ОТДЕЛЕНИЕ РАЗВЕДКИ</h3>
-            <p>Сбор оперативной информации, скрытное наблюдение, целеуказание, радиоперехват. Навыки: маскировка, ориентирование, БПЛА, ПНВ. Оснащение: шифрованные радиостанции, фото- и видеофиксация дальнего радиуса.</p>
-          </div>
-          <div class="unit-card reveal">
-            <div class="unit-hud-line"></div>
-            <h3>СНАЙПЕРСКОЕ ОТДЕЛЕНИЕ</h3>
-            <p>Высокоточная стрельба, огневая поддержка, контрснайперинг. Подготовка: баллистика, метеорология, маскировка. Вооружение: СВД, ВСС «Винторез», лазерные дальномеры. Рабочие дистанции до 800 метров.</p>
-          </div>
-          <div class="unit-card reveal">
-            <div class="unit-hud-line"></div>
-            <h3>ГРУППА ОБЕСПЕЧЕНИЯ</h3>
-            <p>Материально-техническое обеспечение: транспорт, связь, медицина, кинология. Состав: водители бронеавтомобилей, техники, медики, кинологи. Оснащение: «Тигр», мобильные ретрансляторы, тактические аптечки IFAK.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="resources" class="resources-section section-dark">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2 class="section-title"><span class="hud-tag">[РЕСУРСЫ]</span> СЛУЖЕБНЫЕ РЕСУРСЫ</h2>
-          <div class="title-line"></div>
-        </div>
-        <div class="resources-grid reveal">
-          <a href="https://forum.amazing-online.com/forums/patrulno-postovaja-sluzhba.49/" target="_blank" rel="noopener" class="resource-link glass-card">Служебный форум</a>
-          <a href="#" target="_blank" rel="noopener" class="resource-link glass-card" id="manualLink">Учебные пособия</a>
-        </div>
-      </div>
-    </section>
-
-    <section id="lk" class="lk-section section-dark">
-      <div class="container">
-        <div class="section-header reveal">
-          <h2 class="section-title"><span class="hud-tag">[ДОСЬЕ]</span> ЛИЧНЫЙ КАБИНЕТ СОТРУДНИКА</h2>
-          <div class="title-line"></div>
-        </div>
-        <div class="lk-container reveal">
-          <div class="lk-login glass-card" id="lkLogin">
-            <h3>ИДЕНТИФИКАЦИЯ</h3>
-            <p>Введите номер аккаунта или позывной для доступа к личному досье.</p>
-            <input type="text" id="lkInput" class="lk-input" placeholder="Номер аккаунта или позывной">
-            <button class="btn btn-primary" id="lkSubmit">ЗАПРОСИТЬ ДАННЫЕ</button>
-            <div class="lk-error" id="lkError"></div>
-            <div class="lk-loading" id="lkLoading" style="display:none;">ЗАГРУЗКА ДАННЫХ...</div>
-          </div>
-          <div class="lk-profile glass-card" id="lkProfile" style="display:none;">
-            <div class="lk-header">
-              <h3>ЛИЧНОЕ ДЕЛО СОТРУДНИКА</h3>
-              <button class="btn btn-outline" id="lkBack">← НАЗАД</button>
-            </div>
-            <div class="lk-data-grid" id="lkDataGrid"></div>
-            <div class="lk-discipline" id="lkDiscipline"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal-content glass-card" id="modalContent">
-      <button class="modal-close" id="modalClose">×</button>
-      <div class="modal-body" id="modalBody"></div>
     </div>
-  </div>
 
-  <footer class="footer">
-    <div class="footer-line"></div>
-    <div class="footer-content">
-      <div class="footer-logo">
-        <img src="images/gerb-mvd.png" alt="МВД" class="footer-emblem" onerror="this.style.display='none'">
-        <span>ГУ МВД России по Нижегородской области</span>
-      </div>
-      <div class="footer-center">
-        <span>Проект AMAZING YELLOW</span>
-        <span class="footer-separator">|</span>
-        <span>Сделано Alexander_Milize</span>
-      </div>
-      <div class="footer-copy">
-        © 2026 · ОСН «Гром» · Для служебного пользования
-      </div>
+    <header class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <img src="images/gerb-mvd.png" alt="МВД" class="nav-emblem-img">
+                <div class="logo-text">
+                    <span class="logo-dept">ГУ МВД РОССИИ ПО НИЖЕГОРОДСКОЙ ОБЛ.</span>
+                    <span class="logo-unit">ОСН «ГРОМ»</span>
+                </div>
+            </div>
+            <nav class="nav-links" id="navLinks">
+                <a href="#hero" class="nav-item active">Терминал</a>
+                <a href="#about" class="nav-item">Нормативы</a>
+                <a href="#info" class="nav-item">Пособие</a>
+                <a href="#command" class="nav-item">Командование</a>
+                <a href="#units" class="nav-item">Структура</a>
+                <a href="#resources" class="nav-item">Ресурсы</a>
+                <a href="#lk" class="nav-item lk-nav">Личный кабинет</a>
+            </nav>
+            <button class="mobile-toggle" id="mobileToggle" aria-label="Меню">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section id="hero" class="hero-section">
+            <div class="parallax-bg" id="parallaxBg"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-grid"></div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="badge-dot"></span>
+                    ИНФОРМАЦИОННЫЙ ПОРТАЛ · ГРИФ «ДСП»
+                    <span class="badge-dot"></span>
+                </div>
+                <h1 class="hero-title">ОТРЯД СПЕЦИАЛЬНОГО НАЗНАЧЕНИЯ <span class="text-red">«ГРОМ»</span></h1>
+                <p class="hero-subtitle">Главное управление Министерства внутренних дел Российской Федерации по Нижегородской области</p>
+                
+                <div class="hero-terminal-info">
+                    <div class="term-line">
+                        <span class="term-label">СТАТУС ПОРТАЛА:</span>
+                        <span class="term-value online">АКТИВЕН</span>
+                    </div>
+                    <div class="term-line">
+                        <span class="term-label">ОБНОВЛЕНО:</span>
+                        <span class="term-value" id="currentDate">2026-05-24</span>
+                    </div>
+                    <div class="term-line">
+                        <span class="term-label">УРОВЕНЬ ДОСТУПА:</span>
+                        <span class="term-value restricted">ДЛЯ ЛИЧНОГО СОСТАВА</span>
+                    </div>
+                </div>
+
+                <div class="hero-actions">
+                    <button class="btn btn-outline" id="infoBtn">Учебное пособие</button>
+                    <button class="btn btn-outline" id="docsBtn">Нормативная база</button>
+                    <button class="btn btn-primary" id="lkBtn">Личный кабинет</button>
+                </div>
+                
+                <div class="hero-quick-links">
+                    <a href="#about" class="quick-link">НОРМАТИВЫ</a>
+                    <span class="quick-separator">//</span>
+                    <a href="#info" class="quick-link">ПОСОБИЕ</a>
+                    <span class="quick-separator">//</span>
+                    <a href="#command" class="quick-link">КОМАНДОВАНИЕ</a>
+                    <span class="quick-separator">//</span>
+                    <a href="#units" class="quick-link">СТРУКТУРА</a>
+                    <span class="quick-separator">//</span>
+                    <a href="#lk" class="quick-link">ЛК</a>
+                </div>
+            </div>
+            
+            <div class="cinematic-borders">
+                <div class="corner top-left"></div>
+                <div class="corner top-right"></div>
+                <div class="corner bottom-left"></div>
+                <div class="corner bottom-right"></div>
+            </div>
+        </section>
+
+        <section id="about" class="about-section section-dark">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">
+                        <span class="hud-tag">[БАЗА]</span>
+                        НОРМАТИВНАЯ БАЗА
+                    </h2>
+                    <div class="title-line"></div>
+                </div>
+                <div class="about-grid">
+                    <div class="about-text reveal">
+                        <p class="about-intro">Деятельность ОСН «Гром» строго регламентирована законодательством Российской Федерации. Ознакомьтесь с ключевыми нормативными документами.</p>
+                        <div class="legal-links">
+                            <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-o-policii.1019568/" target="_blank" rel="noopener" class="legal-link-item">
+                                <span class="link-icon">></span> ФЗ «О полиции»
+                            </a>
+                            <a href="https://forum.amazing-online.com/threads/ustav-organov-vnutrennix-del.1056410/" target="_blank" rel="noopener" class="legal-link-item">
+                                <span class="link-icon">></span> Устав ОВД
+                            </a>
+                            <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-o-gosudarstvennoj-sobstvennosti-oxranjaemyx-i-sluzhebnyx-territorijax.1006052/" target="_blank" rel="noopener" class="legal-link-item">
+                                <span class="link-icon">></span> ФЗ «О гос. собственности и охраняемых территориях»
+                            </a>
+                            <a href="https://forum.amazing-online.com/threads/ugolovnyj-kodeks-nizhegorodskoj-oblasti.925121/" target="_blank" rel="noopener" class="legal-link-item">
+                                <span class="link-icon">></span> УК Нижегородской области
+                            </a>
+                            <a href="https://forum.amazing-online.com/threads/obschij-kodeks-ob-administrativnyx-pravonarushenijax-nizhegorodskoj-oblasti.1019571/" target="_blank" rel="noopener" class="legal-link-item">
+                                <span class="link-icon">></span> КоАП Нижегородской области
+                            </a>
+                            <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-o-protivodejstvii-terrorizmu.947270/" target="_blank" rel="noopener" class="legal-link-item">
+                                <span class="link-icon">></span> ФЗ «О противодействии терроризму»
+                            </a>
+                            <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-ob-oruzhii.876611/" target="_blank" rel="noopener" class="legal-link-item">
+                                <span class="link-icon">></span> ФЗ «Об оружии»
+                            </a>
+                            <a href="https://forum.amazing-online.com/threads/federalnyj-zakon-ob-operativno-rozysknoj-dejatelnosti.876596/" target="_blank" rel="noopener" class="legal-link-item">
+                                <span class="link-icon">></span> ФЗ «Об ОРД»
+                            </a>
+                        </div>
+                    </div>
+                    <div class="about-cards">
+                        <div class="advantage-card glass-card reveal">
+                            <div class="card-icon-svg">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </div>
+                            <h4>Законность</h4>
+                            <p>Неукоснительное соблюдение законодательства РФ и ведомственных нормативных актов.</p>
+                        </div>
+                        <div class="advantage-card glass-card reveal">
+                            <div class="card-icon-svg">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                </svg>
+                            </div>
+                            <h4>Профессионализм</h4>
+                            <p>Высочайший уровень тактико-специальной, огневой и физической подготовки.</p>
+                        </div>
+                        <div class="advantage-card glass-card reveal">
+                            <div class="card-icon-svg">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                            </div>
+                            <h4>Бдительность</h4>
+                            <p>Постоянная готовность к выполнению задач в условиях повышенной опасности.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="info" class="info-section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">
+                        <span class="hud-tag">[ПОСОБИЕ]</span>
+                        УЧЕБНОЕ ПОСОБИЕ
+                    </h2>
+                    <div class="title-line"></div>
+                </div>
+                <div class="info-grid">
+                    <div class="info-card glass-card reveal" data-modal="modal-pdp">
+                        <div class="card-header-line"></div>
+                        <h3>Оказание ПДП</h3>
+                        <p>Правовая и доврачебная помощь гражданам в зоне проведения специальных операций. Порядок действий, виды помощи, тактические протоколы.</p>
+                        <button class="btn-detail">ПОДРОБНЕЕ <span class="arrow">→</span></button>
+                    </div>
+                    <div class="info-card glass-card reveal" data-modal="modal-svu">
+                        <div class="card-header-line"></div>
+                        <h3>Разминирование СВУ</h3>
+                        <p>Обнаружение, идентификация и обезвреживание самодельных взрывных устройств всех типов. Алгоритмы действий при обнаружении.</p>
+                        <button class="btn-detail">ПОДРОБНЕЕ <span class="arrow">→</span></button>
+                    </div>
+                    <div class="info-card glass-card reveal" data-modal="modal-coord">
+                        <div class="card-header-line"></div>
+                        <h3>Координация нарядов</h3>
+                        <p>Централизованное управление наружными службами, патрульными группами и оперативными нарядами в реальном времени.</p>
+                        <button class="btn-detail">ПОДРОБНЕЕ <span class="arrow">→</span></button>
+                    </div>
+                    <div class="info-card glass-card reveal" data-modal="modal-stroy">
+                        <div class="card-header-line"></div>
+                        <h3>Строевая подготовка</h3>
+                        <p>Ежедневные занятия по строевой выучке, отработка слаженности подразделений, выполнение строевых приёмов с оружием.</p>
+                        <button class="btn-detail">ПОДРОБНЕЕ <span class="arrow">→</span></button>
+                    </div>
+                    <div class="info-card glass-card reveal" data-modal="modal-ognev">
+                        <div class="card-header-line"></div>
+                        <h3>Огневая подготовка</h3>
+                        <p>Стрельба из табельного оружия, тактические стрельбы, штурмовая стрельба в условиях ограниченной видимости.</p>
+                        <button class="btn-detail">ПОДРОБНЕЕ <span class="arrow">→</span></button>
+                    </div>
+                    <div class="info-card glass-card reveal" data-modal="modal-med">
+                        <div class="card-header-line"></div>
+                        <h3>Тактическая медицина</h3>
+                        <p>Оказание само- и взаимопомощи в боевых условиях, эвакуация раненых, применение тактических аптечек IFAK.</p>
+                        <button class="btn-detail">ПОДРОБНЕЕ <span class="arrow">→</span></button>
+                    </div>
+                </div>
+                <div class="accordion reveal" style="margin-top:40px;">
+                    <div class="accordion-item">
+                        <button class="accordion-trigger">
+                            Внутренний регламент и субординация
+                            <span class="accordion-icon">+</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p><strong>1. Иерархическая структура:</strong> Командир отряда → Заместитель командира → Командиры отделений → Старшие групп → Бойцы. Каждый уровень имеет чётко определённые полномочия и зоны ответственности.</p>
+                            <p><strong>2. Субординация:</strong> Обращение к старшим по званию строго по уставу. Доклады о прибытии/убытии обязательны. Обсуждение приказов в присутствии младшего состава запрещено.</p>
+                            <p><strong>3. Внутренний распорядок:</strong> Ежедневное построение в 09:00, проверка готовности снаряжения, распределение на дежурные смены, ведение журнала учёта.</p>
+                            <p><strong>4. Аттестация:</strong> Еженедельная сдача нормативов по ФП и ОП. Ежемесячная тактическая проверка. Квартальная комиссия с участием командования.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger">
+                            Дисциплинарные требования и отбор
+                            <span class="accordion-icon">+</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p><strong>1. Этапы отбора кандидатов:</strong> Психологическое тестирование (MMPI, тест Люшера, беседа с психологом) → Проверка физической подготовки (кросс 3 км, подтягивания не менее 12 раз, полоса препятствий) → Собеседование с командованием → Испытательный срок 3 месяца.</p>
+                            <p><strong>2. Дисциплинарные взыскания:</strong> За опоздание — наряд вне очереди. За нарушение субординации — письменное предупреждение. За повторное нарушение — отстранение от операций на 1 месяц. За коррупционные проявления — немедленное увольнение с передачей материалов в ОСБ.</p>
+                            <p><strong>3. Поощрения:</strong> Благодарность в приказе, досрочное присвоение звания, награждение ведомственными наградами, дополнительный отпуск.</p>
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger">
+                            Штатное расписание и структура
+                            <span class="accordion-icon">+</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p><strong>1. Командование:</strong> Командир отряда (1), Заместитель командира (2), Начальник Центра обучения (1).</p>
+                            <p><strong>2. Штурмовое отделение:</strong> Командир отделения, 2 старших штурмовика, 3 штурмовика. Оснащение: АК-105, ПП-19-01 «Витязь», ВАЛ, светошумовые гранаты, щиты, штурмовые лестницы.</p>
+                            <p><strong>3. Отделение разведки:</strong> Командир отделения, 1 старший разведчик, 2 разведчика. Оснащение: ПНВ, спецсвязь, приборы наблюдения.</p>
+                            <p><strong>4. Снайперское отделение:</strong> Командир отделения, 1 старший снайпер, 1 снайпер. Оснащение: СВД, ВСС «Винторез», лазерные дальномеры.</p>
+                            <p><strong>5. Группа обеспечения:</strong> Командир группы, 2 техника, 2 медика, 2 водителя. Оснащение: бронеавтомобили «Тигр», ретрансляторы, IFAK.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="command" class="command-section section-dark">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">
+                        <span class="hud-tag">[КОМАНДОВАНИЕ]</span>
+                        РУКОВОДЯЩИЙ СОСТАВ
+                    </h2>
+                    <div class="title-line"></div>
+                </div>
+                <div class="command-grid">
+                    <div class="commander-card glass-card reveal">
+                        <div class="commander-photo">
+                            <img src="images/riba.png" alt="Заместитель командира" class="commander-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="photo-placeholder" style="display:none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="commander-info">
+                            <h3 class="commander-callsign">«Рыба»</h3>
+                            <p class="commander-role">Заместитель командира по работе с личным составом</p>
+                            <p class="commander-desc">Прапорщик полиции Тихомиров Никита Сергеевич</p>
+                        </div>
+                        <a href="https://vk.com/malkin21" target="_blank" rel="noopener" class="btn-contact">СВЯЗАТЬСЯ ВК</a>
+                        <div class="card-glow"></div>
+                    </div>
+                    <div class="commander-card glass-card reveal">
+                        <div class="commander-photo">
+                            <img src="images/kurator.png" alt="Командир отряда" class="commander-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="photo-placeholder" style="display:none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="commander-info">
+                            <h3 class="commander-callsign">«Куратор»</h3>
+                            <p class="commander-role">Командир отряда</p>
+                            <p class="commander-desc">Капитан полиции Миризе Александр Эдуардович</p>
+                        </div>
+                        <a href="https://vk.com/flowederephile" target="_blank" rel="noopener" class="btn-contact">СВЯЗАТЬСЯ ВК</a>
+                        <div class="card-glow"></div>
+                    </div>
+                    <div class="commander-card glass-card reveal">
+                        <div class="commander-photo">
+                            <img src="images/volk.png" alt="Начальник центра обучения" class="commander-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="photo-placeholder" style="display:none;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="commander-info">
+                            <h3 class="commander-callsign">«Волк»</h3>
+                            <p class="commander-role">Начальник центра обучения</p>
+                            <p class="commander-desc">Майор полиции Волков Максим Александрович</p>
+                        </div>
+                        <a href="https://vk.com/id622196082" target="_blank" rel="noopener" class="btn-contact">СВЯЗАТЬСЯ ВК</a>
+                        <div class="card-glow"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="units" class="units-section">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">
+                        <span class="hud-tag">[СТРУКТУРА]</span>
+                        ОПЕРАТИВНЫЕ ПОДРАЗДЕЛЕНИЯ
+                    </h2>
+                    <div class="title-line"></div>
+                </div>
+                <div class="units-hud">
+                    <div class="unit-card reveal">
+                        <div class="unit-hud-line"></div>
+                        <h3>ШТУРМОВОЕ ОТДЕЛЕНИЕ</h3>
+                        <p>Основная ударная сила отряда, предназначенная для силового захвата преступников, штурма зданий и транспортных средств. Бойцы отделения проходят усиленную подготовку по ближнему бою (CQB), использованию специальных средств и тактическому взаимодействию в группе. Основное вооружение: автоматы АК-105, пистолеты-пулемёты ПП-19-01 «Витязь», ВАЛ, светошумовые гранаты, щиты. Каждый боец экипирован бронежилетом 5 класса защиты, тактическим шлемом с ПНВ, системой связи.</p>
+                    </div>
+                    <div class="unit-card reveal">
+                        <div class="unit-hud-line"></div>
+                        <h3>ОТДЕЛЕНИЕ РАЗВЕДКИ</h3>
+                        <p>Выполняет задачи по сбору оперативной информации, скрытному наблюдению за объектами, целеуказанию штурмовым группам, радиоперехвату и работе с агентурным аппаратом. Сотрудники отделения владеют навыками маскировки, ориентирования на местности, использования приборов ночного видения. Оснащение: портативные радиостанции с шифрованием, фото- и видеофиксация дальнего радиуса.</p>
+                    </div>
+                    <div class="unit-card reveal">
+                        <div class="unit-hud-line"></div>
+                        <h3>СНАЙПЕРСКОЕ ОТДЕЛЕНИЕ</h3>
+                        <p>Обеспечивает высокоточную стрельбу на дальние дистанции, огневую поддержку штурмовых групп, контрснайперинг и наблюдение за оперативной обстановкой. Снайперы отделения проходят специальную подготовку по баллистике, метеорологии, маскировке и выживанию. Вооружение: снайперские винтовки СВД, винтовки специальные снайперские ВСС «Винторез» и лазерные дальномеры.</p>
+                    </div>
+                    <div class="unit-card reveal">
+                        <div class="unit-hud-line"></div>
+                        <h3>ГРУППА ОБЕСПЕЧЕНИЯ</h3>
+                        <p>Осуществляет материально-техническое обеспечение операций: транспорт, связь, медицинскую помощь, кинологическую поддержку. В состав группы входят водители бронеавтомобилей, техники по обслуживанию специального оборудования, медицинские работники и кинологи со служебными собаками. Оснащение: бронеавтомобили «Тигр», мобильные ретрансляторы и тактические медицинские комплекты IFAK</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="resources" class="resources-section section-dark">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">
+                        <span class="hud-tag">[РЕСУРСЫ]</span>
+                        СЛУЖЕБНЫЕ РЕСУРСЫ
+                    </h2>
+                    <div class="title-line"></div>
+                </div>
+                <div class="resources-grid reveal">
+                    <a href="https://forum.amazing-online.com/forums/patrulno-postovaja-sluzhba.49/" target="_blank" rel="noopener" class="resource-link glass-card">
+                        <span class="res-icon">[S]</span> Служебный форум
+                    </a>
+                    <a href="#" target="_blank" rel="noopener" class="resource-link glass-card" id="manualLink">
+                        <span class="res-icon">[M]</span> Учебные пособия
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section id="lk" class="lk-section section-dark">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2 class="section-title">
+                        <span class="hud-tag">[ДОСЬЕ]</span>
+                        ЛИЧНЫЙ КАБИНЕТ СОТРУДНИКА
+                    </h2>
+                    <div class="title-line"></div>
+                </div>
+                <div class="lk-container reveal">
+                    <div class="lk-login glass-card" id="lkLogin">
+                        <div class="lk-login-header">
+                            <div class="lk-login-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                                    <circle cx="12" cy="7" r="4"/>
+                                </svg>
+                            </div>
+                            <h3>ИДЕНТИФИКАЦИЯ СОТРУДНИКА</h3>
+                        </div>
+                        <p>Введите номер аккаунта, никнейм или позывной для доступа к личному досье.</p>
+                        <div class="lk-input-group">
+                            <input type="text" id="lkInput" class="lk-input" placeholder="ВВЕДИТЕ ДАННЫЕ...">
+                            <button class="btn btn-primary lk-submit-btn" id="lkSubmit">
+                                <span>ЗАПРОСИТЬ</span>
+                                <span class="btn-icon">>></span>
+                            </button>
+                        </div>
+                        <div class="lk-error" id="lkError"></div>
+                        <div class="lk-loading" id="lkLoading" style="display:none;">
+                            <div class="loading-spinner"></div>
+                            <span>ЗАГРУЗКА ДАННЫХ...</span>
+                        </div>
+                    </div>
+
+                    <div class="lk-profile" id="lkProfile" style="display:none;">
+                        <div class="lk-profile-header glass-card">
+                            <div class="lk-profile-top">
+                                <div class="lk-profile-avatar" id="lkAvatar">
+                                  <svg viewBox="0 0 100 100" class="avatar-svg">
+                                    <defs>
+                                      <pattern id="specnaz-pattern" patternUnits="userSpaceOnUse" width="100" height="100">
+                                        <rect width="100" height="100" fill="#121418"/>
+                                        <path d="M50 15 L70 25 L70 50 C70 65 55 80 50 85 C45 80 30 65 30 50 L30 25 Z" fill="none" stroke="var(--accent-gold)" stroke-width="2.5"/>
+                                        <circle cx="50" cy="40" r="14" fill="none" stroke="var(--accent-gold)" stroke-width="2"/>
+                                        <line x1="50" y1="26" x2="50" y2="34" stroke="var(--accent-gold)" stroke-width="1.5"/>
+                                        <path d="M38 50 L38 60 M62 50 L62 60" stroke="var(--accent-gold)" stroke-width="1.5"/>
+                                        <path d="M42 28 L50 18 L58 28" fill="none" stroke="var(--accent-gold)" stroke-width="1.5"/>
+                                        <line x1="30" y1="65" x2="70" y2="65" stroke="var(--accent-gold)" stroke-width="1"/>
+                                        <line x1="32" y1="70" x2="68" y2="70" stroke="var(--accent-gold)" stroke-width="1"/>
+                                      </pattern>
+                                    </defs>
+                                    <rect width="100" height="100" fill="url(#specnaz-pattern)"/>
+                                  </svg>
+                                </div>
+                                <div class="lk-profile-title">
+                                  <h3 id="lkProfileName"></h3>
+                                  <span id="lkProfileRank"></span>
+                                </div>
+                                <button class="btn btn-outline lk-back-btn" id="lkBack">← НАЗАД</button>
+                              </div>
+                              <div class="lk-profile-stats" id="lkProfileStats"></div>
+                        </div>
+
+                        <div class="lk-profile-body">
+                            <div class="lk-body-card glass-card" id="lkInfoCard">
+                                <h4 class="lk-card-title">
+                                    <span class="hud-tag">[ИНФО]</span>
+                                    ЛИЧНЫЕ ДАННЫЕ
+                                </h4>
+                                <div class="lk-info-grid" id="lkDataGrid"></div>
+                            </div>
+
+                            <div class="lk-body-card glass-card lk-discipline-card" id="lkDisciplineCard" style="display:none;">
+                                <h4 class="lk-card-title">
+                                    <span class="hud-tag" style="color:var(--accent-red-glow);">[ВЗЫСКАНИЯ]</span>
+                                    ДИСЦИПЛИНАРНАЯ ПРАКТИКА
+                                </h4>
+                                <div class="lk-discipline-content" id="lkDiscipline"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content glass-card" id="modalContent">
+            <button class="modal-close" id="modalClose">×</button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
     </div>
-  </footer>
 
-  <script src="script.js" defer></script>
+    <footer class="footer">
+        <div class="footer-line"></div>
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="images/gerb-mvd.png" alt="МВД" class="footer-emblem-img">
+                <span>ГУ МВД России по Нижегородской области</span>
+            </div>
+            <div class="footer-center">
+                <span>Проект AMAZING YELLOW</span>
+                <span class="footer-separator">|</span>
+                <span>Сделано Alexander_Milize</span>
+            </div>
+            <div class="footer-copy">
+                &copy; 2026 &middot; ОСН «Гром» &middot; Для служебного пользования
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js" defer></script>
 </body>
 </html>
