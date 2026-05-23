@@ -230,6 +230,8 @@ section { padding: 90px 0; }
   .section-header { margin-bottom: 40px; }
 }
 
+
+
 @media (max-width: 480px) {
   .container { padding: 0 16px; }
   .hero-badge { font-size: 0.5rem; padding: 6px 14px; }
@@ -240,4 +242,48 @@ section { padding: 90px 0; }
   .command-grid { gap: 16px; }
   .commander-card { padding: 20px; }
   .commander-photo { width: 80px; height: 80px; }
+}
+
+.lk-container { max-width: 700px; margin: 0 auto; }
+.lk-login, .lk-profile { padding: 30px; }
+.lk-login h3, .lk-profile h3 { font-family: var(--font-mono); color: var(--accent-gold); margin-bottom: 16px; }
+.lk-login p { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 20px; }
+.lk-input {
+  width: 100%; padding: 12px 16px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color);
+  color: var(--text-primary); font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 16px;
+  outline: none; transition: border-color 0.2s;
+}
+.lk-input:focus { border-color: var(--accent-gold); }
+.lk-error { color: var(--accent-red-glow); font-size: 0.7rem; font-family: var(--font-mono); margin-top: 8px; }
+.lk-loading { color: var(--accent-gold); font-family: var(--font-mono); font-size: 0.7rem; margin-top: 8px; }
+.lk-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.lk-data-grid { display: grid; gap: 12px; margin-bottom: 24px; }
+.lk-field { display: flex; gap: 12px; font-family: var(--font-mono); font-size: 0.8rem; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.lk-label { color: var(--text-muted); min-width: 160px; }
+.lk-value { color: var(--text-primary); font-weight: 500; }
+.lk-vk-link { color: var(--accent-gold); transition: color 0.2s; }
+.lk-vk-link:hover { color: var(--accent-gold-dim); }
+.lk-discipline { background: rgba(139,26,26,0.08); border: 1px solid rgba(139,26,26,0.2); padding: 16px; }
+.lk-discipline h4 { color: var(--accent-red-glow); font-family: var(--font-mono); font-size: 0.75rem; margin-bottom: 8px; }
+.lk-discipline p { color: var(--text-secondary); font-size: 0.8rem; white-space: pre-line; }
+.lk-nav { color: var(--accent-gold) !important; }
+
+@media (max-width: 768px) {
+  .lk-field { flex-direction: column; gap: 4px; }
+  .lk-label { min-width: auto; }
+  .lk-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+}
+
+.lk-rank-container {
+  display: flex;
+  align-items: center;
+}
+.lk-rank-img {
+  max-width: 120px;
+  max-height: 40px;
+  object-fit: contain;
+}
+.lk-rank-text {
+  color: var(--text-primary);
+  font-size: 0.8rem;
 }
