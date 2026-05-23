@@ -84,10 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
           nickname: row[1] || '',
           accountNumber: row[2] || '',
           callsign: row[3] || '',
-          rankImg: row[4] || '',
-          position: row[5] || '',
-          discipline: row[6] || '',
-          vk: row[7] || ''
+          rank: row[4] || '',
+          rankImg: row[5] || '',
+          position: row[6] || '',
+          discipline: row[7] || '',
+          vk: row[8] || ''
         }));
         console.log('Загружено сотрудников:', allEmployees.length);
       }
@@ -247,16 +248,16 @@ document.addEventListener('DOMContentLoaded', () => {
     html += `<div class="lk-field"><span class="lk-label">НОМЕР АККАУНТА:</span><span class="lk-value">${employee.accountNumber || '—'}</span></div>`;
     html += `<div class="lk-field"><span class="lk-label">ПОЗЫВНОЙ:</span><span class="lk-value">${employee.callsign || '—'}</span></div>`;
 
-    if (employee.rankImg) {
-      html += `<div class="lk-field"><span class="lk-label">ЗВАНИЕ:</span><div class="lk-rank-container"><img src="${employee.rankImg}" alt="Погоны" class="lk-rank-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';"><span class="lk-rank-text" style="display:none;">${employee.rankImg || '—'}</span></div></div>`;
-    } else {
-      html += `<div class="lk-field"><span class="lk-label">ЗВАНИЕ:</span><span class="lk-value">—</span></div>`;
+    html += `<div class="lk-field"><span class="lk-label">ЗВАНИЕ:</span><span class="lk-value">${employee.rank || '—'}</span></div>`;
+
+    if (employee.rankImg && employee.rankImg.trim() !== '') {
+      html += `<div class="lk-field"><span class="lk-label">ПОГОНЫ:</span><div class="lk-rank-container"><img src="${employee.rankImg}" alt="Погоны" class="lk-rank-img" onerror="this.style.display='none';"></div></div>`;
     }
 
     html += `<div class="lk-field"><span class="lk-label">ДОЛЖНОСТЬ:</span><span class="lk-value">${employee.position || '—'}</span></div>`;
 
-    if (employee.vk) {
-      html += `<div class="lk-field"><span class="lk-label">VK:</span><a href="${employee.vk}" target="_blank" rel="noopener" class="lk-vk-link">${employee.vk}</a></div>`;
+    if (employee.vk && employee.vk.trim() !== '') {
+      html += `<div class="lk-field"><span class="lk-label">VK:</span><a href="${employee.vk}" target="_blank" rel="noopener" class="lk-vk-link">ПЕРЕЙТИ</a></div>`;
     } else {
       html += `<div class="lk-field"><span class="lk-label">VK:</span><span class="lk-value">—</span></div>`;
     }
