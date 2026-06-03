@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const GOOGLE_SHEETS_API_KEY = 'AIzaSyCvyswdAfUU_QRqObbX6849PclID91gh-M';
   const SPREADSHEET_ID = '1qUoWEk_Cr_IMi8HjIoaO3OJXcImf9pJ45hbRfdiOxlU';
   const SHEET_NAME = 'Список сотрудников';
-  const LOCK_CODE = '0215';
+  const LOCK_CODE = '0306';
   const LOCK_TIMEOUT = 30;
   const IDLE_TIMEOUT = 300;
 
